@@ -237,6 +237,17 @@ require('lazy').setup({
     opts = {
       replaceHome = true,
       lastViewTime = 'pastWeek',
+      projectEntry = 'lua MiniFiles.open()',
+
+      -- sections = {
+      --   {
+      --     'name',
+      --     config = {
+      --       style = 'pipe',
+      --       gradient = 'blue_green',
+      --     },
+      --   },
+      -- },
     },
     lazy = false,
   },
@@ -446,6 +457,7 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require('telescope').load_extension, 'spaceport')
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -459,6 +471,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>sp', require('telescope').extensions.spaceport.projects, { desc = '[S]earch [P]rojects' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -949,7 +962,6 @@ require('lazy').setup({
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       --vim.cmd.colorscheme 'tokyonight-night'
     end,
-
   },
 
   -- Highlight todo, notes, etc in comments
