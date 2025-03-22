@@ -239,15 +239,24 @@ require('lazy').setup({
       lastViewTime = 'pastWeek',
       projectEntry = 'lua MiniFiles.open()',
 
-      -- sections = {
-      --   {
-      --     'name',
-      --     config = {
-      --       style = 'pipe',
-      --       gradient = 'blue_green',
-      --     },
-      --   },
-      -- },
+      sections = {
+        {
+          '_global_remaps',
+        },
+        {
+          'name',
+          config = {
+            style = 'pipe',
+            gradient = 'blue_green',
+          },
+        },
+        {
+          'remaps',
+        },
+        {
+          'recents',
+        },
+      },
     },
     lazy = false,
   },
