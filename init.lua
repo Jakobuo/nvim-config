@@ -1005,6 +1005,9 @@ require('lazy').setup({
       vim.g.loaded_netrwPlugin = 1
       vim.g.loaded_netrw = 1
       require('mini.files').setup()
+      vim.keymap.set('n', '<leader>-', function()
+        require('mini.files').open(vim.api.nvim_buf_get_name(0))
+      end, { desc = 'Open current file in mini.files' })
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
