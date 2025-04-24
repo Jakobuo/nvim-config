@@ -242,7 +242,7 @@ require('lazy').setup({
     'CWood-sdf/spaceport.nvim',
     opts = {
       lastViewTime = 'pastWeek',
-      projectEntry = 'lua MiniFiles.open()',
+      projectEntry = 'lua MiniFiles.open(nil, false)',
 
       sections = {
         {
