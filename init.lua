@@ -273,11 +273,16 @@ require('lazy').setup({
   },
 
   {
-    'MeanderingProgrammer/render-markdown.nvim',
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
-    ---@module 'render-markdown'
-    ---@type render.md.UserConfig
-    opts = { completions = { lsp = { enabled = true } } },
+    'OXY2DEV/markview.nvim',
+    lazy = false,
+    dependencies = { 'saghen/blink.cmp' },
+    opts = {
+      preview = {
+        icon_provider = 'devicons',
+        hybrid_modes = { 'n', 'i' },
+        debounce = 10,
+      },
+    },
   },
 
   {
@@ -744,6 +749,7 @@ require('lazy').setup({
         nil_ls = {},
         clangd = {},
         marksman = {},
+        texlab = {},
 
         lua_ls = {
           -- cmd = { ... },
@@ -924,7 +930,7 @@ require('lazy').setup({
       },
 
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'lazydev' },
+        default = { 'lsp', 'path', 'snippets', 'lazydev', 'buffer' },
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
         },
@@ -942,7 +948,7 @@ require('lazy').setup({
       fuzzy = { implementation = 'prefer_rust_with_warning' },
 
       -- Shows a signature help window while you type arguments for a function
-      signature = { enabled = true },
+      signature = { enabled = true, window = { direction_priority = { 's', 'n' } } },
     },
   },
 
@@ -1025,7 +1031,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'latex', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1037,6 +1043,7 @@ require('lazy').setup({
       },
       indent = { enable = true, disable = { 'ruby' } },
     },
+    dependencies = { 'OXY2DEV/markview.nvim' },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
     --
