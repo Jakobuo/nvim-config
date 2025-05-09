@@ -645,7 +645,7 @@ require('lazy').setup({
       -- Mason must be loaded before its dependents so we need to set it up here.
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
       { 'williamboman/mason.nvim', opts = {} },
-      'williamboman/mason-lspconfig.nvim',
+      -- 'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
@@ -909,24 +909,33 @@ require('lazy').setup({
         'bacon',
         'clang-format',
       })
+
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-      require('mason-lspconfig').setup {
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            -- server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            server.capabilities = require('blink.cmp').get_lsp_capabilities(server.capabilities)
-            vim.lsp.config(server_name, server)
-            vim.lsp.enable(server_name)
-          end,
-        },
-      }
+      for servername, server in pairs(servers) do
+        server.capabilities = require('blink.cmp').get_lsp_capabilities(server.capabilities)
+        vim.lsp.config(servername, server)
+        vim.lsp.enable(servername)
+      end
+
+      -- require('mason-lspconfig').setup {
+      --   ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
+      --   automatic_installation = false,
+      -- handlers = {
+      --   function(server_name)
+      -- local server = servers[server_name] or {}
+      -- This handles overriding only values explicitly passed
+      -- by the server configuration above. Useful when disabling
+      -- certain features of an LSP (for example, turning off formatting for ts_ls)
+      -- server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+      -- server.capabilities = require('blink.cmp').get_lsp_capabilities(server.capabilities)
+      -- vim.lsp.config(server_name, server)
+      -- print(server_name)
+      -- print(table.concat(vim.tbl_keys(server)))
+      -- vim.lsp.enable(server_name)
+      -- end,
+      -- },
+      -- }
     end,
   },
 
