@@ -114,9 +114,9 @@ vim.opt.showmode = false
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.schedule(function()
-  vim.opt.clipboard = 'unnamedplus'
-end)
+-- vim.schedule(function()
+--   vim.opt.clipboard = 'unnamedplus'
+-- end)
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -180,19 +180,19 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
-vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!"<CR>')
-vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!"<CR>')
-vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!"<CR>')
-vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!"<CR>')
-
+-- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!"<CR>')
+-- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!"<CR>')
+-- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!"<CR>')
+-- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!"<CR>')
+--
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+-- vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+-- vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+-- vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
@@ -242,12 +242,15 @@ require('lazy').setup({
     'CWood-sdf/spaceport.nvim',
     opts = {
       lastViewTime = 'pastWeek',
-      projectEntry = 'lua MiniFiles.open(nil, false)',
+      -- projectEntry = 'lua MiniFiles.open(nil, false)',
+      projectEntry = 'Telescope find_files',
+
+      shortcuts = {
+        { 'f', '.config/nvim' },
+      },
 
       sections = {
-        {
-          '_global_remaps',
-        },
+        '_global_remaps',
         {
           'name',
           config = {
@@ -255,12 +258,8 @@ require('lazy').setup({
             gradient = 'blue_green',
           },
         },
-        {
-          'remaps',
-        },
-        {
-          'recents',
-        },
+        'remaps',
+        'recents',
       },
     },
     lazy = false,
@@ -273,16 +272,99 @@ require('lazy').setup({
   },
 
   {
-    'OXY2DEV/markview.nvim',
-    lazy = false,
-    dependencies = { 'saghen/blink.cmp' },
+    'jmbuhr/otter.nvim',
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+    },
     opts = {
-      preview = {
-        icon_provider = 'devicons',
-        hybrid_modes = { 'n', 'i' },
-        debounce = 10,
+      lsp = {
+        diagnostic_update_events = { 'BufWritePost', 'InsertLeave', 'TextChanged' },
+      },
+      -- lazy = true,
+    },
+  },
+
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {
+      completions = { lsp = { enabled = true } },
+      render_modes = true,
+      latex = { enabled = false },
+      checkbox = { checked = { scope_highlight = '@markup.strikethrough' } },
+      link = {
+        wiki = {
+          body = function(context)
+            if context.alias then
+              return nil
+            end
+
+            local index = string.find(context.destination, '#')
+            if index then
+              return string.sub(context.destination, index + 1)
+            else
+              return nil
+            end
+          end,
+        },
       },
     },
+  },
+
+  {
+    'folke/snacks.nvim',
+    priority = 900,
+    lazy = false,
+    ---@diagnostic disable-next-line: undefined-doc-name
+    ---@type snacks.Config
+    opts = {
+      image = {
+        enabled = true,
+      },
+      lazygit = {
+        enabled = true,
+      },
+    },
+  },
+
+  {
+    'FluxxField/bionic-reading.nvim',
+    opts = {},
+  },
+
+  -- {
+  --   'OXY2DEV/markview.nvim',
+  --   lazy = false,
+  --   dependencies = { 'saghen/blink.cmp' },
+  --   opts = {
+  --     preview = {
+  --       icon_provider = 'devicons',
+  --       hybrid_modes = { 'n', 'i' },
+  --       debounce = 10,
+  --     },
+  --   },
+  -- },
+
+  {
+    'chrisgrieser/nvim-scissors',
+    dependencies = { 'nvim-telescope/telescope.nvim' },
+    config = function()
+      require('scissors').setup {
+
+        snippetDir = vim.fn.stdpath 'config' .. '/snippets',
+      }
+
+      vim.keymap.set('n', '<leader>pe', function()
+        require('scissors').editSnippet()
+      end, { desc = 'Sni[p]pet Edit' })
+
+      -- when used in visual mode, prefills the selection as snippet body
+      vim.keymap.set({ 'n', 'x' }, '<leader>pa', function()
+        require('scissors').addNewSnippet()
+      end, { desc = 'Sni[p]pet Add' })
+    end,
   },
 
   {
@@ -408,6 +490,8 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>g', group = '[G]it' },
+        { '<leader>p', group = 'Sni[p]pet' },
       },
     },
   },
@@ -441,6 +525,8 @@ require('lazy').setup({
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      'benfowler/telescope-luasnip.nvim',
+      'OliverChao/telescope-picker-list.nvim',
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -478,6 +564,17 @@ require('lazy').setup({
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
+
+          picker_list = {
+            user_pickers = {
+              {
+                'todo-comments',
+                function()
+                  vim.cmd [[TodoTelescope]]
+                end,
+              },
+            },
+          },
         },
       }
 
@@ -485,13 +582,15 @@ require('lazy').setup({
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
       pcall(require('telescope').load_extension, 'spaceport')
+      pcall(require('telescope').load_extension, 'luasnip')
+      pcall(require('telescope').load_extension, 'picker_list')
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-      vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
+      vim.keymap.set('n', '<leader>st', require('telescope').extensions.picker_list.picker_list, { desc = '[S]earch [T]elescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
@@ -628,7 +727,7 @@ require('lazy').setup({
 
           -- Fuzzy find all the symbols in your current workspace.
           --  Similar to document symbols, except searches over your entire project.
-          map('gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
+          map('gW', require('telescope.builtin').lsp_workspace_symbols, 'Open Workspace Symbols')
 
           -- Jump to the type of the word under your cursor.
           --  Useful when you're not sure what type a variable is and you want to see
@@ -636,10 +735,10 @@ require('lazy').setup({
           map('grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
 
           -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
-          ---@param client vim.lsp.Client
-          ---@param method vim.lsp.protocol.Method
-          ---@param bufnr? integer some lsp support methods only in specific files
-          ---@return boolean
+          --@param client vim.lsp.Client
+          --@param method vim.lsp.protocol.Method
+          --@param bufnr? integer some lsp support methods only in specific files
+          --@return boolean
           -- local function client_supports_method(client, method, bufnr)
           -- if vim.fn.has 'nvim-0.11' == 1 then
           -- return client:supports_method(method, bufnr)
@@ -718,12 +817,6 @@ require('lazy').setup({
         },
       }
 
-      -- LSP servers and clients are able to communicate to each other what features they support.
-      --  By default, Neovim doesn't support everything that is in the LSP specification.
-      --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
-      --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
-
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --
@@ -748,8 +841,38 @@ require('lazy').setup({
         --
         nil_ls = {},
         clangd = {},
-        marksman = {},
+        -- marksman = {},
+        pyright = {},
+        markdown_oxide = {
+          capabilities = { workspace = { didChangeWatchedFiles = { dynamicRegistration = true } } },
+          on_attach = function()
+            local clients = vim.lsp.get_clients { name = 'markdown_oxide' }
+            vim.api.nvim_create_autocmd({ 'TextChanged', 'InsertLeave', 'CursorHold', 'BufEnter' }, {
+              buffer = 0,
+              callback = function()
+                vim.lsp.codelens.refresh { bufnr = 0 }
+              end,
+            })
+            vim.api.nvim_buf_create_user_command(0, 'LspToday', function()
+              clients[1]:exec_cmd { title = 'Today', command = 'jump', arguments = { 'today' } }
+            end, {
+              desc = "Open today's daily note",
+            })
+            vim.api.nvim_buf_create_user_command(0, 'LspTomorrow', function()
+              clients[1]:exec_cmd { title = 'Tomorrow', command = 'jump', arguments = { 'tomorrow' } }
+            end, {
+              desc = "Open tomorrow's daily note",
+            })
+            vim.api.nvim_buf_create_user_command(0, 'LspYesterday', function()
+              clients[1]:exec_cmd { title = 'Yesterday', command = 'jump', arguments = { 'yesterday' } }
+            end, {
+              desc = "Open yesterday's daily note",
+            })
+            require('otter').activate()
+          end,
+        },
         texlab = {},
+        fsautocomplete = {},
 
         lua_ls = {
           -- cmd = { ... },
@@ -797,8 +920,10 @@ require('lazy').setup({
             -- This handles overriding only values explicitly passed
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
+            -- server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+            server.capabilities = require('blink.cmp').get_lsp_capabilities(server.capabilities)
+            vim.lsp.config(server_name, server)
+            vim.lsp.enable(server_name)
           end,
         },
       }
@@ -825,7 +950,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = false }
+        local disable_filetypes = { c = false, cpp = false }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
@@ -882,7 +1007,18 @@ require('lazy').setup({
           --   end,
           -- },
         },
-        opts = {},
+        config = function()
+          require('luasnip').setup {
+            enable_autosnippets = true,
+            ft_func = require('luasnip.extras.filetype_functions').from_cursor_pos,
+            load_ft_func = require('luasnip.extras.filetype_functions').extend_load_ft {
+              markdown = { 'latex' },
+            },
+          }
+          -- require('luasnip.loaders.from_vscode').lazy_load { path = vim.fn.stdpath 'config' .. '/snippets' }
+
+          require('luasnip.loaders.from_vscode').lazy_load { paths = { vim.fn.stdpath 'config' .. '/snippets' } }
+        end,
       },
       'folke/lazydev.nvim',
     },
@@ -1043,7 +1179,7 @@ require('lazy').setup({
       },
       indent = { enable = true, disable = { 'ruby' } },
     },
-    dependencies = { 'OXY2DEV/markview.nvim' },
+    -- dependencies = { 'OXY2DEV/markview.nvim' },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
     --
@@ -1099,6 +1235,35 @@ require('lazy').setup({
     },
   },
 })
+
+vim.api.nvim_create_user_command('Daily', function(args)
+  -- start markdown-oxide or attach to it
+  local client_id = vim.lsp.start(vim.tbl_deep_extend('force', vim.lsp.config['markdown_oxide'], { root_dir = vim.env.HOME .. '/Wiki' }), { attach = false })
+
+  if client_id then
+    local client = vim.lsp.get_client_by_id(client_id)
+    if client then
+      -- wait for markdown-oxide to initialize
+      vim.wait(100, function()
+        return client.initialized
+      end, 5)
+
+      -- markdown-oxide will attempt and fail to parse an empty string as a path,
+      -- so we give it an empty table instead
+      -- This is necessary because args.args is an empty string if there are no arguments
+      local arguments = {}
+      if args.args ~= '' then
+        arguments = { args.args }
+      end
+
+      client:exec_cmd { title = 'Daily', command = 'jump', arguments = arguments }
+    else
+      vim.notify_once('Client not found', vim.log.levels.WARN)
+    end
+  else
+    vim.notify_once('Failed to start markdown-oxide', vim.log.levels.WARN)
+  end
+end, { desc = 'Open daily note', nargs = '*' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
