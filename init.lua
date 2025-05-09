@@ -845,31 +845,29 @@ require('lazy').setup({
         pyright = {},
         markdown_oxide = {
           capabilities = { workspace = { didChangeWatchedFiles = { dynamicRegistration = true } } },
-          on_attach = function(event)
-            local client = vim.lsp.get_client_by_id(event.data.client_id)
+          on_attach = function()
+            local clients = vim.lsp.get_clients { name = 'markdown_oxide' }
             vim.api.nvim_create_autocmd({ 'TextChanged', 'InsertLeave', 'CursorHold', 'BufEnter' }, {
               buffer = 0,
               callback = function()
                 vim.lsp.codelens.refresh { bufnr = 0 }
               end,
             })
-            if client then
-              vim.api.nvim_buf_create_user_command(0, 'LspToday', function()
-                client:exec_cmd { title = 'Today', command = 'jump', arguments = { 'today' } }
-              end, {
-                desc = "Open today's daily note",
-              })
-              vim.api.nvim_buf_create_user_command(0, 'LspTomorrow', function()
-                client:exec_cmd { title = 'Tomorrow', command = 'jump', arguments = { 'tomorrow' } }
-              end, {
-                desc = "Open tomorrow's daily note",
-              })
-              vim.api.nvim_buf_create_user_command(0, 'LspYesterday', function()
-                client:exec_cmd { title = 'Yesterday', command = 'jump', arguments = { 'yesterday' } }
-              end, {
-                desc = "Open yesterday's daily note",
-              })
-            end
+            vim.api.nvim_buf_create_user_command(0, 'LspToday', function()
+              clients[1]:exec_cmd { title = 'Today', command = 'jump', arguments = { 'today' } }
+            end, {
+              desc = "Open today's daily note",
+            })
+            vim.api.nvim_buf_create_user_command(0, 'LspTomorrow', function()
+              clients[1]:exec_cmd { title = 'Tomorrow', command = 'jump', arguments = { 'tomorrow' } }
+            end, {
+              desc = "Open tomorrow's daily note",
+            })
+            vim.api.nvim_buf_create_user_command(0, 'LspYesterday', function()
+              clients[1]:exec_cmd { title = 'Yesterday', command = 'jump', arguments = { 'yesterday' } }
+            end, {
+              desc = "Open yesterday's daily note",
+            })
             require('otter').activate()
           end,
         },
