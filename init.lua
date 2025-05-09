@@ -645,7 +645,7 @@ require('lazy').setup({
       -- Mason must be loaded before its dependents so we need to set it up here.
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
       { 'williamboman/mason.nvim', opts = {} },
-      -- 'williamboman/mason-lspconfig.nvim',
+      'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
@@ -845,29 +845,31 @@ require('lazy').setup({
         pyright = {},
         markdown_oxide = {
           capabilities = { workspace = { didChangeWatchedFiles = { dynamicRegistration = true } } },
-          on_attach = function()
-            local clients = vim.lsp.get_clients { name = 'markdown_oxide' }
+          on_attach = function(event)
+            local client = vim.lsp.get_client_by_id(event.data.client_id)
             vim.api.nvim_create_autocmd({ 'TextChanged', 'InsertLeave', 'CursorHold', 'BufEnter' }, {
               buffer = 0,
               callback = function()
                 vim.lsp.codelens.refresh { bufnr = 0 }
               end,
             })
-            vim.api.nvim_buf_create_user_command(0, 'LspToday', function()
-              clients[1]:exec_cmd { title = 'Today', command = 'jump', arguments = { 'today' } }
-            end, {
-              desc = "Open today's daily note",
-            })
-            vim.api.nvim_buf_create_user_command(0, 'LspTomorrow', function()
-              clients[1]:exec_cmd { title = 'Tomorrow', command = 'jump', arguments = { 'tomorrow' } }
-            end, {
-              desc = "Open tomorrow's daily note",
-            })
-            vim.api.nvim_buf_create_user_command(0, 'LspYesterday', function()
-              clients[1]:exec_cmd { title = 'Yesterday', command = 'jump', arguments = { 'yesterday' } }
-            end, {
-              desc = "Open yesterday's daily note",
-            })
+            if client then
+              vim.api.nvim_buf_create_user_command(0, 'LspToday', function()
+                client:exec_cmd { title = 'Today', command = 'jump', arguments = { 'today' } }
+              end, {
+                desc = "Open today's daily note",
+              })
+              vim.api.nvim_buf_create_user_command(0, 'LspTomorrow', function()
+                client:exec_cmd { title = 'Tomorrow', command = 'jump', arguments = { 'tomorrow' } }
+              end, {
+                desc = "Open tomorrow's daily note",
+              })
+              vim.api.nvim_buf_create_user_command(0, 'LspYesterday', function()
+                client:exec_cmd { title = 'Yesterday', command = 'jump', arguments = { 'yesterday' } }
+              end, {
+                desc = "Open yesterday's daily note",
+              })
+            end
             require('otter').activate()
           end,
         },
@@ -918,24 +920,25 @@ require('lazy').setup({
         vim.lsp.enable(servername)
       end
 
-      -- require('mason-lspconfig').setup {
-      --   ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-      --   automatic_installation = false,
-      -- handlers = {
-      --   function(server_name)
-      -- local server = servers[server_name] or {}
-      -- This handles overriding only values explicitly passed
-      -- by the server configuration above. Useful when disabling
-      -- certain features of an LSP (for example, turning off formatting for ts_ls)
-      -- server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-      -- server.capabilities = require('blink.cmp').get_lsp_capabilities(server.capabilities)
-      -- vim.lsp.config(server_name, server)
-      -- print(server_name)
-      -- print(table.concat(vim.tbl_keys(server)))
-      -- vim.lsp.enable(server_name)
-      -- end,
-      -- },
-      -- }
+      require('mason-lspconfig').setup {
+        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
+        automatic_enable = false,
+        --   automatic_installation = false,
+        -- handlers = {
+        --   function(server_name)
+        -- local server = servers[server_name] or {}
+        -- This handles overriding only values explicitly passed
+        -- by the server configuration above. Useful when disabling
+        -- certain features of an LSP (for example, turning off formatting for ts_ls)
+        -- server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+        -- server.capabilities = require('blink.cmp').get_lsp_capabilities(server.capabilities)
+        -- vim.lsp.config(server_name, server)
+        -- print(server_name)
+        -- print(table.concat(vim.tbl_keys(server)))
+        -- vim.lsp.enable(server_name)
+        -- end,
+        -- },
+      }
     end,
   },
 
