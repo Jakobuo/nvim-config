@@ -271,14 +271,31 @@ require('lazy').setup({
     opts = {},
   },
 
+  -- {
+  --   'jmbuhr/otter.nvim',
+  --   dependencies = {
+  --     'nvim-treesitter/nvim-treesitter',
+  --   },
+  --   opts = {
+  --     lsp = {
+  --       diagnostic_update_events = { 'BufWritePost', 'InsertLeave', 'TextChanged' },
+  --     },
+  --     -- lazy = true,
+  --   },
+  -- },
+
   {
-    'jmbuhr/otter.nvim',
+    'Jakobuo/otter.nvim',
+    branch = 'nested-injections',
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
     },
     opts = {
       lsp = {
         diagnostic_update_events = { 'BufWritePost', 'InsertLeave', 'TextChanged' },
+      },
+      extensions = {
+        ['markdown_inline'] = 'markdown_inline',
       },
       -- lazy = true,
     },
@@ -837,7 +854,8 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
+        ts_ls = {},
+        html = {},
         --
         nil_ls = {},
         clangd = {},
